@@ -38,9 +38,9 @@
 ## 第一章 服务器层：自建独享 VPS（小小东方案）
 
 ### 1.1 采购原则
-- **服务商**：[搬瓦工 BandwagonHost（点击注册）](https://bandwagonhost.com/aff.php?aff=85933) 或 DMIT，选 **洛杉矶 CN2 GIA** 线路（对国内优化、敏感期稳定）
+- **服务商**：[搬瓦工 BandwagonHost（点击注册）](https://bandwagonhost.com/aff.php?aff=85933)（推广链接，不影响价格）或 DMIT，选 **洛杉矶 CN2 GIA** 线路（对国内优化、敏感期稳定）
 - **配置**：2G 内存 / 每月 1-2T 流量足够（本例：Ubuntu 24.04，38G 盘）
-- **独享是底线**：一台服务器只服务自己和家人。共享 = 蒸馏厂画像 = 必封
+- **独享是底线**：一台服务器只服务自己和家人。共享 = 蒸馏厂画像（大量账号从同一 IP 抽取模型数据的样子）= 必封
 
 ### 1.2 部署（用 AI 代跑）
 小小东方案的核心思想：把部署提示词交给**非 Claude 的 AI**（Codex/Kimi/GLM 均可），它通过 SSH 自动完成：
@@ -50,6 +50,8 @@
 - SSH 装好即关闭密码登录，仅密钥
 
 ### 1.3 部署后立刻做的安全加固（超出默认基线的部分）
+> 以下端口（面板 53998、节点 2443、订阅 2096）都是**本教程实测环境的例子**——你的实际端口以部署完成后生成的登录信息文件为准；22/80/443 是固定的。跑本仓库的 `harden.sh` 可自动完成本节全部操作。
+
 ```
 □ apt 全量补丁升级 + 安装 unattended-upgrades（自动安全更新，默认没有！）
 □ 3x-ui 面板改绑 127.0.0.1，公网访问改为 SSH 隧道：
@@ -57,9 +59,9 @@
         HostName <你的VPS IP>
         User root
         IdentityFile ~/.ssh/<你的密钥>
-        LocalForward 53998 127.0.0.1:53998
-    # 用法：ssh -N vps-panel 后浏览器开 https://127.0.0.1:53998/<面板路径>
-□ UFW 只留 22/80/443/2443/2096，面板端口和无关端口全关
+        LocalForward <面板端口> 127.0.0.1:<面板端口>
+    # 用法：ssh -N vps-panel 后浏览器开 https://127.0.0.1:<面板端口>/<面板路径>
+□ UFW 只留 22/80/443 + 你的节点端口 + 订阅端口，面板端口和无关端口全关
 □ 装 fail2ban（SSH 爆破防护）
 □ root 密码轮换（开通邮件里的旧密码作废），新密码存 macOS 钥匙串
 □ 商家后台开自动续费（到期=停机=IP回收=全套归零）
@@ -81,7 +83,7 @@
 - mihomo 外部控制器可关闭（unix socket 仍可用于审计）
 
 ### 2.2 claude-switcher：14 项审计 + Kill-Switch
-装完后每次启动 Claude 前跑 `checkdetail`，14 项审计：
+从 [claude-switcher](https://github.com/YOURSJEYO/claude-switcher) 仓库安装。装完后每次启动 Claude 前跑 `checkdetail`（下文所有 `claude-switch.sh <子命令>` 的路径以你的实际安装位置为准），14 项审计：
 ```
 代理内核 / TUN网卡 / 出口IP / IP一致 / 时区 / 地区 / IPv6 / DNS /
 WebRTC / 保镖 / 规则置顶 / 客户端语言 / ASN属性 / 生态可达性
@@ -105,7 +107,7 @@ LOCALE_TARGET="en_US"
 - 验收：检测站 WebRTC UDP 出口 = **你的 VPS IP**（不是"已禁用"）
 
 ### 2.4 Kill-Switch 保镖（每 10 秒巡检）
-代理内核或 TUN 一挂，10 秒内自动杀掉 Claude 桌面版 + CLI——杜绝"代理断了 Claude 还在裸连重试"的窗口。装好后看一眼日志确认待命：`launchctl print system/local.claude-bodyguard`
+代理内核或 TUN 一挂，10 秒内自动杀掉 Claude 桌面版 + CLI——杜绝"代理断了 Claude 还在裸连重试"的窗口。装好后确认待命（macOS）：`launchctl print system/local.claude-bodyguard`；Windows 版是系统服务，见 claude-switcher 仓库 `windows/` 目录。
 
 ---
 
@@ -118,11 +120,11 @@ Locale   = en_US
 系统语言 = 仅 en-US（第二语言带 zh 会漏进浏览器 Accept-Language）
 定位服务 = 关闭
 ```
-改语言：`defaults write .GlobalPreferences AppleLanguages -array "en-US"`（中文输入法不受影响）
+改语言（macOS）：`defaults write .GlobalPreferences AppleLanguages -array "en-US"`（中文输入法不受影响）；Windows：设置 → 时间和语言 → 语言，只保留 English。
 
 ### 3.2 浏览器
 - Chrome 设置 → 语言：**只留 English**（navigator.languages 不能出现 zh）
-- 预期地板分：fuck-claude.com 评分 **19/100 = Low**（剩余 18 分是苹果全球预装的中文字体 + 1 分 Apple emoji——结构性无法去除，也构不成信号）
+- 预期地板分：fuck-claude.com 评分 **Mac 实测 19/100 = Low**（剩余 18 分是系统全球预装的中文字体——Windows 同理，微软雅黑也是预装的，结构性无法去除，也构不成信号）
 - 用独立浏览器 profile 做防封操作，日常浏览和操作分离
 
 ### 3.3 DNS
@@ -208,10 +210,10 @@ grep -r 'ANTHROPIC_BASE_URL\|bigmodel\|zhipu' ~/.claude/settings.json ~/.claude.
 | # | 项目 | 标准 |
 |---|---|---|
 | 1 | 14 项审计 | `claude-switch.sh checkdetail` 13 绿 + ASN warn（机房 IP 是方案固有）|
-| 2 | 出口一致性 | ipinfo 显示 VPS / US·LA，强制直连测试同样走 VPS |
+| 2 | 出口一致性 | ipinfo 显示 VPS / 与服务器所在地一致，强制直连测试同样走 VPS |
 | 3 | WebRTC | 检测站 UDP 出口 = VPS IP（不是"已禁用"）|
 | 4 | DNS | 无泄漏，出口不在国内 |
-| 5 | 浏览器指纹 | fuck-claude.com ≈ 19 分（Mac 地板）|
+| 5 | 浏览器指纹 | fuck-claude.com ≈ 19 分（系统预装中文字体构成的地板分）|
 | 6 | **IP 信任评分** | **ip.net.coffee/claude ≥ 70**（机房 IP 的现实区间 70-80）|
 | 7 | 服务器体检 | `xxd-vps verify` 全过（面板加固导致的 2 项 FAIL 除外）|
 | 8 | 登录记录 | 全设备同一地区、无 Unknown 以外的异常 |

@@ -16,7 +16,7 @@
 
 1. **搭服务器**：按上游方案 [xiaoxiaodong-vps](https://github.com/nevertoday/xiaoxiaodong-vps) 部署一台属于你自己的 VPS（推荐 [搬瓦工 洛杉矶 CN2 GIA](https://bandwagonhost.com/aff.php?aff=85933)，2G 内存即可）
 2. **跑加固**：部署完成后在服务器上执行本仓库的 `harden.sh`（补丁 + 面板回环 + 防火墙 + 自动安全更新）
-3. **照教程验收**：打开 [tutorial.md](tutorial.md) 按第七章清单逐项打勾（含 14 项审计、WebRTC 出口、IP 信任评分 ≥70）
+3. **照教程验收**：打开 [tutorial.md](tutorial.md) 按第六章验收清单逐项打勾（含 14 项审计、WebRTC 出口、IP 信任评分 ≥70）
 
 不会配置？把仓库根目录的 `AGENTS.md` 整段粘贴给本地的 AI 编程助手（GLM / Kimi / Codex 均可），它会按文档完成部署检查、加固与验收。
 

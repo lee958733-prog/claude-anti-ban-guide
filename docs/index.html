@@ -97,9 +97,9 @@
 
 <h3>1.1 采购原则</h3>
 <ul>
-<li><strong>服务商</strong>：<a href="https://bandwagonhost.com/aff.php?aff=85933">搬瓦工 BandwagonHost（点击注册）</a> 或 DMIT，选<strong>洛杉矶 CN2 GIA</strong> 线路（对国内优化、敏感期稳定）</li>
+<li><strong>服务商</strong>：<a href="https://bandwagonhost.com/aff.php?aff=85933">搬瓦工 BandwagonHost（点击注册）</a>（推广链接，不影响价格）或 DMIT，选<strong>洛杉矶 CN2 GIA</strong> 线路（对国内优化、敏感期稳定）</li>
 <li><strong>配置</strong>：2G 内存 / 每月 1-2T 流量足够（本例：Ubuntu 24.04，38G 盘）</li>
-<li><strong>独享是底线</strong>：一台服务器只服务自己和家人。共享 = 蒸馏厂画像 = 必封</li>
+<li><strong>独享是底线</strong>：一台服务器只服务自己和家人。共享 = 蒸馏厂画像（大量账号从同一 IP 抽取模型数据的样子）= 必封</li>
 </ul>
 
 <h3>1.2 部署（用 AI 代跑）</h3>
@@ -112,15 +112,16 @@
 </ul>
 
 <h3>1.3 部署后立刻做的安全加固（超出默认基线的部分）</h3>
+<p>以下端口（面板 53998、节点 2443、订阅 2096）都是<strong>本教程实测环境的例子</strong>——实际端口以部署生成的登录信息为准；22/80/443 固定。跑本仓库的 <code>harden.sh</code> 可自动完成本节全部操作。</p>
 <pre><code>□ apt 全量补丁升级 + 安装 unattended-upgrades（自动安全更新，默认没有！）
 □ 3x-ui 面板改绑 127.0.0.1，公网访问改为 SSH 隧道：
     Host vps-panel
         HostName &lt;你的VPS IP&gt;
         User root
         IdentityFile ~/.ssh/&lt;你的密钥&gt;
-        LocalForward 53998 127.0.0.1:53998
-    # 用法：ssh -N vps-panel 后浏览器开 https://127.0.0.1:53998/&lt;面板路径&gt;
-□ UFW 只留 22/80/443/2443/2096，面板端口和无关端口全关
+        LocalForward &lt;面板端口&gt; 127.0.0.1:&lt;面板端口&gt;
+    # 用法：ssh -N vps-panel 后浏览器开 https://127.0.0.1:&lt;面板端口&gt;/&lt;面板路径&gt;
+□ UFW 只留 22/80/443 + 你的节点端口 + 订阅端口，面板端口和无关端口全关
 □ 装 fail2ban（SSH 爆破防护）
 □ root 密码轮换（开通邮件里的旧密码作废），新密码存 macOS 钥匙串
 □ 商家后台开自动续费（到期=停机=IP回收=全套归零）
@@ -141,7 +142,7 @@
 </ul>
 
 <h3>2.2 claude-switcher：14 项审计 + Kill-Switch</h3>
-<p>装完后每次启动 Claude 前跑 <code>checkdetail</code>，14 项审计：</p>
+<p>从 <a href="https://github.com/YOURSJEYO/claude-switcher">claude-switcher</a> 仓库安装。装完后每次启动 Claude 前跑 <code>checkdetail</code>（<code>claude-switch.sh</code> 路径以实际安装位置为准），14 项审计：</p>
 <pre><code>代理内核 / TUN网卡 / 出口IP / IP一致 / 时区 / 地区 / IPv6 / DNS /
 WebRTC / 保镖 / 规则置顶 / 客户端语言 / ASN属性 / 生态可达性</code></pre>
 <p>关键配置（脚本头部，换节点/换订阅后必查）：</p>
@@ -160,7 +161,7 @@ LOCALE_TARGET="en_US"</code></pre>
 </ul>
 
 <h3>2.4 Kill-Switch 保镖（每 10 秒巡检）</h3>
-<p>代理内核或 TUN 一挂，10 秒内自动杀掉 Claude 桌面版 + CLI——杜绝"代理断了 Claude 还在裸连重试"的窗口。装好后看一眼日志确认待命：<code>launchctl print system/local.claude-bodyguard</code></p>
+<p>代理内核或 TUN 一挂，10 秒内自动杀掉 Claude 桌面版 + CLI——杜绝"代理断了 Claude 还在裸连重试"的窗口。装好后确认待命（macOS）：<code>launchctl print system/local.claude-bodyguard</code>；Windows 版是系统服务，见 claude-switcher 仓库 <code>windows/</code> 目录</p>
 
 <h2>第三章 环境伪装细节（指纹层）</h2>
 
@@ -169,12 +170,12 @@ LOCALE_TARGET="en_US"</code></pre>
 Locale   = en_US
 系统语言 = 仅 en-US（第二语言带 zh 会漏进浏览器 Accept-Language）
 定位服务 = 关闭</code></pre>
-<p>改语言：<code>defaults write .GlobalPreferences AppleLanguages -array "en-US"</code>（中文输入法不受影响）</p>
+<p>改语言（macOS）：<code>defaults write .GlobalPreferences AppleLanguages -array "en-US"</code>（中文输入法不受影响）；Windows：设置 → 时间和语言 → 语言，只保留 English。</p>
 
 <h3>3.2 浏览器</h3>
 <ul>
 <li>Chrome 设置 → 语言：<strong>只留 English</strong>（navigator.languages 不能出现 zh）</li>
-<li>预期地板分：fuck-claude.com 评分 <strong>19/100 = Low</strong>（剩余 18 分是苹果全球预装的中文字体 + 1 分 Apple emoji——结构性无法去除，也构不成信号）</li>
+<li>预期地板分：fuck-claude.com 评分 <strong>Mac 实测 19/100 = Low</strong>（剩余 18 分是系统全球预装的中文字体——Windows 同理，微软雅黑也是预装的，结构性无法去除，也构不成信号）</li>
 <li>用独立浏览器 profile 做防封操作，日常浏览和操作分离</li>
 </ul>
 
@@ -270,10 +271,10 @@ grep -r 'ANTHROPIC_BASE_URL\|bigmodel\|zhipu' ~/.claude/settings.json ~/.claude.
 <table>
 <tr><th>#</th><th>项目</th><th>标准</th></tr>
 <tr><td>1</td><td>14 项审计</td><td><code>claude-switch.sh checkdetail</code> 13 绿 + ASN warn（机房 IP 是方案固有）</td></tr>
-<tr><td>2</td><td>出口一致性</td><td>ipinfo 显示 VPS / US·LA，强制直连测试同样走 VPS</td></tr>
+<tr><td>2</td><td>出口一致性</td><td>ipinfo 显示 VPS / 与服务器所在地一致，强制直连测试同样走 VPS</td></tr>
 <tr><td>3</td><td>WebRTC</td><td>检测站 UDP 出口 = VPS IP（不是"已禁用"）</td></tr>
 <tr><td>4</td><td>DNS</td><td>无泄漏，出口不在国内</td></tr>
-<tr><td>5</td><td>浏览器指纹</td><td>fuck-claude.com ≈ 19 分（Mac 地板）</td></tr>
+<tr><td>5</td><td>浏览器指纹</td><td>fuck-claude.com ≈ 19 分（系统预装中文字体构成的地板分）</td></tr>
 <tr><td>6</td><td><strong>IP 信任评分</strong></td><td><strong>ip.net.coffee/claude ≥ 70</strong>（机房 IP 的现实区间 70-80）</td></tr>
 <tr><td>7</td><td>服务器体检</td><td><code>xxd-vps verify</code> 全过（面板加固导致的 2 项 FAIL 除外）</td></tr>
 <tr><td>8</td><td>登录记录</td><td>全设备同一地区、无 Unknown 以外的异常</td></tr>
