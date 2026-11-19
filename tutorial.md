@@ -182,11 +182,13 @@ Claude Code **每次请求都会上传**：会话内容 + `~/.claude/CLAUDE.md` 
 - ✅ 这类运维全部走非 Anthropic 的 AI 渠道（GLM/Kimi/Codex 均可）
 
 ### 5.3 定期巡检（每 1-2 周一次，四层）
+> 以下命令在终端（Terminal / PowerShell）里执行。**先把 `<你的VPS IP>` 替换成你自己服务器的 IP**，其余部分可原样复制粘贴。命令 2 需要先装 jq（macOS：`brew install jq`；Windows：`winget install jqlang.jq`；不想装就跳过这条，用命令 1、3 也能覆盖大头）。
+
 ```bash
 # 1.会话记录（注意甄别误报：官方文档里的 "kill switch"、其他平台话题、base64 巧合）
 grep -rliE 'claude-switcher|mihomo|保镖|搬瓦工|bwg-|<你的VPS IP>' ~/.claude/projects
 
-# 2.prompt 历史
+# 2.prompt 历史（需 jq）
 jq -r '.projects | to_entries[].value.history // [] | .[]' ~/.claude.json | grep -cE '防封|clash|代理'
 
 # 3.每请求上传的两个文件
