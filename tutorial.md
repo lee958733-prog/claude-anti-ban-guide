@@ -1,7 +1,6 @@
 # Claude 防封完全教程 —— 从零搭建到细节验收
 
 > 基于 2026-11 实战搭建全程整理（Mac + 自建 VPS 方案）
-> 参考来源：@小小东 开源方案（github.com/nevertoday/xiaoxiaodong-vps）、@Web300fa 防封资源汇总、YOURSJEYO/claude-switcher
 
 ---
 
@@ -197,3 +196,5 @@ grep -r 'ANTHROPIC_BASE_URL\|bigmodel\|zhipu' ~/.claude/settings.json ~/.claude.
 ---
 
 *教程完。核心一句：工具保物理层，纪律保内容层，一致性保画像层——三层齐备，安心使用。*
+
+> 基座方案：[xiaoxiaodong-vps](https://github.com/nevertoday/xiaoxiaodong-vps)（MIT）· 审计工具：[claude-switcher](https://github.com/YOURSJEYO/claude-switcher) · 资源汇总：@Web300fa
