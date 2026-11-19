@@ -62,7 +62,7 @@
 <li>服务器层：自建独享 VPS</li>
 <li>客户端防护层：让真实 IP 物理出不去</li>
 <li>环境伪装细节（指纹层）</li>
-<li>账号与支付</li>
+<li>账号注册与订阅（保姆级）</li>
 <li>污染面管理</li>
 <li>验收清单</li>
 <li>日常运维 + 血泪坑速查表</li>
@@ -76,7 +76,7 @@
 <li><strong>内容污染是最大暗坑</strong>——工具保网络层，对话内容保画像层；防封话题永远不出现在 Claude 的任何会话里（用非 Anthropic 渠道的 AI 做运维）</li>
 </ol>
 
-<h2>一、服务器层：自建独享 VPS（小小东方案）</h2>
+<h2>第一章 服务器层：自建独享 VPS（小小东方案）</h2>
 
 <h3>1.1 采购原则</h3>
 <ul>
@@ -113,7 +113,7 @@
 <p>方案自带验收命令：<code>xxd-vps verify</code>（在服务器上直接跑），33 项全查。<br>
 若做了"面板绑回环"加固，面板相关的 2 项会显示 FAIL——这是预期偏离，不是故障，别"修复"回公网监听。</p>
 
-<h2>二、客户端防护层：让真实 IP 物理出不去</h2>
+<h2>第二章 客户端防护层：让真实 IP 物理出不去</h2>
 
 <h3>2.1 Clash Verge（TUN 模式是灵魂）</h3>
 <ul>
@@ -145,7 +145,7 @@ LOCALE_TARGET="en_US"</code></pre>
 <h3>2.4 Kill-Switch 保镖（每 10 秒巡检）</h3>
 <p>代理内核或 TUN 一挂，10 秒内自动杀掉 Claude 桌面版 + CLI——杜绝"代理断了 Claude 还在裸连重试"的窗口。装好后看一眼日志确认待命：<code>launchctl print system/local.claude-bodyguard</code></p>
 
-<h2>三、环境伪装细节（指纹层）</h2>
+<h2>第三章 环境伪装细节（指纹层）</h2>
 
 <h3>3.1 系统四件套</h3>
 <pre><code>时区     = 服务器城市（如 America/Los_Angeles）
@@ -170,22 +170,55 @@ Locale   = en_US
 <h3>3.4 已知检测机制（逆向报告结论）</h3>
 <p>严格的 "China user" 检查<strong>只在非官方端点（ANTHROPIC_BASE_URL 反代）场景触发</strong>，读 OS 时区 + 代理主机名。走官方登录 + 时区正确 = 主干全绿。<strong>绝对不要用反代/套壳接 Claude</strong>。</p>
 
-<h2>四、账号与支付</h2>
-<ol>
-<li><strong>Gmail 归属地</strong>：不是美国就用官方表单改（policies.google.com/country-association-form），<strong>在订阅之前改好</strong>；改完一年内别再动</li>
-<li><strong>订阅支付</strong>：确保账单货币是 USD（归属地正确自然就是）；用自己的支付方式，不过代充</li>
-<li><strong>新号节奏</strong>（前三~五个 5 小时窗口）：
-  <ul>
-    <li>正常人工使用，英文专业性话题开几个新对话</li>
-    <li>❌ 不跑批量/自动化/无人值守任务、不打满额度（每周期留 ~20%）</li>
-    <li>✅ "重度"的定义是行为模式不是用量：人盯着的 8 小时 &lt; 无人值守的 2 小时</li>
-  </ul>
-</li>
-<li><strong>设备登录记录</strong>：全部显示同一城市 = 健康（不同 GeoIP 库对机房 IP 的城市标注可能不同，国家一致才是关键）；CLI 显示 Unknown 正常；<strong>不要频繁登出/登入设备</strong></li>
-<li><strong>手机端</strong>：最稳是"只用电脑版"；要用手机就必须常开代理（Shadowrocket 导入专用订阅），绝不在裸联网环境下打开 Claude</li>
-</ol>
+<h2>第四章 账号注册与订阅（保姆级）</h2>
 
-<h2>五、污染面管理（外面教程不写的部分）</h2>
+<h3>4.1 注册 Gmail</h3>
+<ul>
+<li><strong>时机</strong>：整套环境（VPS + TUN + 时区/语言）<strong>验收通过后</strong>再注册——注册那一刻的出口 IP 决定账号的初始归属地（实测教训：在非美国出口下注册的号，归属地会跟着出口走，事后要多走一道官方变更流程）</li>
+<li>资料：姓名拼音、生日 ≥18 岁且今后保持一致；手机验证能跳过就跳过，跳不过说明该出口/设备正被风控，换个时间再试</li>
+<li>注册后自检：pay.google.com → 设置 → 付款资料国家应为 United States；不是就用官方表单改（policies.google.com/country-association-form），<strong>改完一年内别再动</strong></li>
+</ul>
+
+<h3>4.2 注册 Claude 账号</h3>
+<ul>
+<li>claude.ai → Continue with Google，用上面的 Gmail 登录</li>
+<li>首次设置：<strong>不同意 AI 训练数据使用</strong>、<strong>关闭位置共享</strong></li>
+<li>可先在免费档正常用几天给账号热身（可选但推荐）</li>
+</ul>
+
+<h3>4.3 购买 Pro 会员</h3>
+<ul>
+<li><strong>订阅前三查</strong>：Gmail 归属地 = US ✓ 出口 IP = US ✓ 结账货币 = USD ✓——任何一项不对就先停</li>
+<li>入口：claude.ai → Settings → Plans（或 Google Play 内订阅，区域跟随 Google 账号，同样以 USD 结算）</li>
+<li>支付：自己的外币信用卡（参考小小东方案：Google Pay + 国内银行 Visa）；<strong>绝不代充</strong>——支付人与账号不一致本身就是风控信号</li>
+<li>首笔 USD 账单 = 账号"美国付费用户"的第一笔画像，一致性从此闭环</li>
+</ul>
+
+<h3>4.4 已有账号的补救</h3>
+<ul>
+<li>归属不对：官方表单改（见 4.1），务必在<strong>订阅之前</strong>改好</li>
+<li>支付原则：资金来源自己掌控，不经过他人之手（代充/合租/共享号都是高危信号）</li>
+</ul>
+
+<h3>4.5 新号节奏（前三~五个 5 小时窗口）</h3>
+<ul>
+<li>正常人工使用，英文专业性话题开几个新对话</li>
+<li>❌ 不跑批量/自动化/无人值守任务、不打满额度（每周期留 ~20%）</li>
+<li>✅ "重度"的定义是行为模式不是用量：人盯着的 8 小时 &lt; 无人值守的 2 小时</li>
+</ul>
+
+<h3>4.6 设备登录记录</h3>
+<ul>
+<li>全部显示同一城市 = 健康（不同 GeoIP 库对机房 IP 的城市标注可能不同，国家一致才是关键）；CLI 显示 Unknown 正常</li>
+<li><strong>不要频繁登出/登入设备</strong>——每次都是新的认证事件</li>
+</ul>
+
+<h3>4.7 手机端</h3>
+<ul>
+<li>最稳是"只用电脑版"；要用手机就必须常开代理（Shadowrocket 导入专用订阅），绝不在裸联网环境下打开 Claude</li>
+</ul>
+
+<h2>第五章 污染面管理（外面教程不写的部分）</h2>
 
 <h3>5.1 核心认知</h3>
 <p>Claude Code <strong>每次请求都会上传</strong>：会话内容 + <code>~/.claude/CLAUDE.md</code> + <code>settings.json</code>。它能看到你让它看的本地文件。所以防封不只是网络层——<strong>你在 Claude 面前聊过什么，就是你的画像</strong>。</p>
@@ -216,7 +249,7 @@ grep -r 'ANTHROPIC_BASE_URL\|bigmodel\|zhipu' ~/.claude/settings.json ~/.claude.
 <h3>5.5 环境整洁</h3>
 <p>旧订阅 yaml、迁移包、安装镜像、含敏感内容的参考文件——用完即删。桌面和下载目录定期清空。</p>
 
-<h2>六、验收清单（全部达标才算完）</h2>
+<h2>第六章 验收清单（全部达标才算完）</h2>
 <table>
 <tr><th>#</th><th>项目</th><th>标准</th></tr>
 <tr><td>1</td><td>14 项审计</td><td><code>claude-switch.sh checkdetail</code> 13 绿 + ASN warn（机房 IP 是方案固有）</td></tr>
@@ -230,7 +263,7 @@ grep -r 'ANTHROPIC_BASE_URL\|bigmodel\|zhipu' ~/.claude/settings.json ~/.claude.
 <tr><td>9</td><td>污染巡检</td><td>四层全零命中</td></tr>
 </table>
 
-<h2>七、日常运维</h2>
+<h2>第七章 日常运维</h2>
 <ul>
 <li><strong>异动处理顺序（刻在脑子里）</strong>：① status.anthropic.com 看官方是否故障 → ② 本地 <code>checkdetail</code> → ③ 才轮到怀疑代理。<strong>官方故障期间什么都别动</strong></li>
 <li><strong>换节点/换订阅后</strong>：跑 <code>set-region</code> + 核对脚本基线四行</li>
