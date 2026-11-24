@@ -53,7 +53,7 @@
 <article>
 
 <h1>Claude 防封完全教程<br>—— 从零搭建到细节验收</h1>
-<p>基于 2026-11 实战搭建全程整理（Mac 实测 · Windows 同样适用 · 自建 VPS 方案）</p>
+<p>基于 2026-11 实战搭建全程整理（Mac 实测 · Windows 同样适用 · 自建 VPS 方案 · 2026-11-12 平台最严新规生效后验证有效）</p>
 
 <h2>使用说明（动手前先读 30 秒）</h2>
 <p><strong>先通读全文，再动手。</strong>本教程的坑大多不是"操作难"，而是"不知道纪律"——时区被脚本改错、Cookie 误清导致登出、会话内容污染画像，全是不知道规则造成的返工。通读一遍 30 分钟，省掉几小时踩坑。</p>
@@ -97,8 +97,9 @@
 
 <h3>1.1 采购原则</h3>
 <ul>
-<li><strong>服务商</strong>：<a href="https://bandwagonhost.com/aff.php?aff=85933">搬瓦工 BandwagonHost（点击注册）</a>（推广链接，不影响价格）或 DMIT，选<strong>洛杉矶 CN2 GIA</strong> 线路（对国内优化、敏感期稳定）</li>
-<li><strong>配置</strong>：2G 内存 / 每月 1-2T 流量足够（本例：Ubuntu 24.04，38G 盘）</li>
+<li><strong>服务商</strong>：<a href="https://bandwagonhost.com/aff.php?aff=85933">搬瓦工 BandwagonHost（点击注册）</a>（推广链接，不影响价格）或 DMIT（近期缺货），选<strong>洛杉矶 CN2 GIA</strong> 线路（对国内优化、敏感期稳定）</li>
+<li><strong>配置</strong>：2G 内存 / 每月 2T 流量（1T 套餐近期缺货；本例：Ubuntu 24.04，38G 盘）</li>
+<li><strong>小坑</strong>：搬瓦工下单页选不了系统的话，开通后到 KiwiVM 后台重装成 Ubuntu 24.04 即可</li>
 <li><strong>独享是底线</strong>：一台服务器只服务自己和家人。共享 = 蒸馏厂画像（大量账号从同一 IP 抽取模型数据的样子）= 必封</li>
 </ul>
 
@@ -142,7 +143,7 @@
 </ul>
 
 <h3>2.2 claude-switcher：14 项审计 + Kill-Switch</h3>
-<p>从 <a href="https://github.com/YOURSJEYO/claude-switcher">claude-switcher</a> 仓库安装。装完后每次启动 Claude 前跑 <code>checkdetail</code>（<code>claude-switch.sh</code> 路径以实际安装位置为准），14 项审计：</p>
+<p>从 <a href="https://github.com/YOURSJEYO/claude-switcher">claude-switcher</a> 仓库安装（另有<strong>零安装的 Web 版检测页</strong>，手机浏览器打开即测）。装完后每次启动 Claude 前跑 <code>checkdetail</code>（<code>claude-switch.sh</code> 路径以实际安装位置为准），14 项审计：</p>
 <pre><code>代理内核 / TUN网卡 / 出口IP / IP一致 / 时区 / 地区 / IPv6 / DNS /
 WebRTC / 保镖 / 规则置顶 / 客户端语言 / ASN属性 / 生态可达性</code></pre>
 <p>关键配置（脚本头部，换节点/换订阅后必查）：</p>
@@ -285,6 +286,7 @@ grep -r 'ANTHROPIC_BASE_URL\|bigmodel\|zhipu' ~/.claude/settings.json ~/.claude.
 <h2>第七章 日常运维</h2>
 <ul>
 <li><strong>异动处理顺序（刻在脑子里）</strong>：① status.anthropic.com 看官方是否故障 → ② 本地 <code>checkdetail</code> → ③ 才轮到怀疑代理。<strong>官方故障期间什么都别动</strong></li>
+<li><strong>万一收到安全警告/被封</strong>：登录 claude.ai 按页面提示填写官方申诉表（2026-11 起的官方入口）；社区统计成功率约一成，别抱太高期望——<strong>重点永远是别触发它</strong></li>
 <li><strong>换节点/换订阅后</strong>：跑 <code>set-region</code> + 核对脚本基线四行</li>
 <li><strong>感觉服务器不对</strong>：跑 <code>xxd-vps verify</code></li>
 <li>用完 Claude 就退出是好习惯，但<strong>挂着不是风险，持续跑任务才是</strong></li>
@@ -305,7 +307,7 @@ grep -r 'ANTHROPIC_BASE_URL\|bigmodel\|zhipu' ~/.claude/settings.json ~/.claude.
 
 <hr>
 <p class="footer">工具保物理层，纪律保内容层，一致性保画像层——三层齐备，安心使用。</p>
-<p class="footer">基座方案：<a href="https://github.com/nevertoday/xiaoxiaodong-vps">xiaoxiaodong-vps</a>（MIT）· 审计工具：<a href="https://github.com/YOURSJEYO/claude-switcher">claude-switcher</a> · 资源汇总：@Web300fa</p>
+<p class="footer">基座方案：<a href="https://github.com/nevertoday/xiaoxiaodong-vps">xiaoxiaodong-vps</a>（MIT）· 审计工具：<a href="https://github.com/YOURSJEYO/claude-switcher">claude-switcher</a>（2026-11-02 后新版 AGPL-3.0，早期 MIT） · 资源汇总：@Web300fa</p>
 
 </article>
 </body>

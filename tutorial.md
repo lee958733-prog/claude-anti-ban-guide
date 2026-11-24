@@ -1,6 +1,6 @@
 # Claude 防封完全教程 —— 从零搭建到细节验收
 
-> 基于 2026-11 实战搭建全程整理（Mac 实测 · Windows 同样适用 · 自建 VPS 方案）
+> 基于 2026-11 实战搭建全程整理（Mac 实测 · Windows 同样适用 · 自建 VPS 方案 · 2026-11-12 平台最严新规生效后验证有效）
 
 ---
 
@@ -38,8 +38,9 @@
 ## 第一章 服务器层：自建独享 VPS（小小东方案）
 
 ### 1.1 采购原则
-- **服务商**：[搬瓦工 BandwagonHost（点击注册）](https://bandwagonhost.com/aff.php?aff=85933)（推广链接，不影响价格）或 DMIT，选 **洛杉矶 CN2 GIA** 线路（对国内优化、敏感期稳定）
-- **配置**：2G 内存 / 每月 1-2T 流量足够（本例：Ubuntu 24.04，38G 盘）
+- **服务商**：[搬瓦工 BandwagonHost（点击注册）](https://bandwagonhost.com/aff.php?aff=85933)（推广链接，不影响价格）或 DMIT（近期缺货），选 **洛杉矶 CN2 GIA** 线路（对国内优化、敏感期稳定）
+- **配置**：2G 内存 / 每月 2T 流量（1T 套餐近期缺货；本例：Ubuntu 24.04，38G 盘）
+- **小坑**：搬瓦工下单页选不了系统的话，开通后到 KiwiVM 后台重装成 Ubuntu 24.04 即可
 - **独享是底线**：一台服务器只服务自己和家人。共享 = 蒸馏厂画像（大量账号从同一 IP 抽取模型数据的样子）= 必封
 
 ### 1.2 部署（用 AI 代跑）
@@ -83,7 +84,7 @@
 - mihomo 外部控制器可关闭（unix socket 仍可用于审计）
 
 ### 2.2 claude-switcher：14 项审计 + Kill-Switch
-从 [claude-switcher](https://github.com/YOURSJEYO/claude-switcher) 仓库安装。装完后每次启动 Claude 前跑 `checkdetail`（下文所有 `claude-switch.sh <子命令>` 的路径以你的实际安装位置为准），14 项审计：
+从 [claude-switcher](https://github.com/YOURSJEYO/claude-switcher) 仓库安装（它还有**零安装的 Web 版检测页**，手机浏览器打开即测，适合先快速自检）。装完后每次启动 Claude 前跑 `checkdetail`（下文所有 `claude-switch.sh <子命令>` 的路径以你的实际安装位置为准），14 项审计：
 ```
 代理内核 / TUN网卡 / 出口IP / IP一致 / 时区 / 地区 / IPv6 / DNS /
 WebRTC / 保镖 / 规则置顶 / 客户端语言 / ASN属性 / 生态可达性
@@ -226,6 +227,7 @@ grep -r 'ANTHROPIC_BASE_URL\|bigmodel\|zhipu' ~/.claude/settings.json ~/.claude.
 ## 第七章 日常运维
 
 - **异动处理顺序（刻在脑子里）**：① status.anthropic.com 看官方是否故障 → ② 本地 `checkdetail` → ③ 才轮到怀疑代理。**官方故障期间什么都别动**
+- **万一收到安全警告/被封**：登录 claude.ai 按页面提示填写官方申诉表（2026-11 起的官方入口，由安全团队复查）；社区统计成功率约一成，别抱太高期望——**重点永远是别触发它**
 - **换节点/换订阅后**：跑 `set-region` + 核对脚本基线四行
 - **感觉服务器不对**：跑 `xxd-vps verify`
 - 用完 Claude 就退出是好习惯，但**挂着不是风险，持续跑任务才是**
@@ -247,4 +249,4 @@ grep -r 'ANTHROPIC_BASE_URL\|bigmodel\|zhipu' ~/.claude/settings.json ~/.claude.
 
 *教程完。核心一句：工具保物理层，纪律保内容层，一致性保画像层——三层齐备，安心使用。*
 
-> 基座方案：[xiaoxiaodong-vps](https://github.com/nevertoday/xiaoxiaodong-vps)（MIT）· 审计工具：[claude-switcher](https://github.com/YOURSJEYO/claude-switcher) · 资源汇总：@Web300fa
+> 基座方案：[xiaoxiaodong-vps](https://github.com/nevertoday/xiaoxiaodong-vps)（MIT）· 审计工具：[claude-switcher](https://github.com/YOURSJEYO/claude-switcher)（2026-11-02 后的新版本为 AGPL-3.0，早期版本 MIT）· 资源汇总：@Web300fa

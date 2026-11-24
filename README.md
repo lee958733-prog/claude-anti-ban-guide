@@ -14,7 +14,7 @@
 
 ## 快速开始（三步）
 
-1. **搭服务器**：按上游方案 [xiaoxiaodong-vps](https://github.com/nevertoday/xiaoxiaodong-vps) 部署一台属于你自己的 VPS（推荐 [搬瓦工 洛杉矶 CN2 GIA](https://bandwagonhost.com/aff.php?aff=85933)，2G 内存即可）
+1. **搭服务器**：按上游方案 [xiaoxiaodong-vps](https://github.com/nevertoday/xiaoxiaodong-vps) 部署一台属于你自己的 VPS（推荐 [搬瓦工 洛杉矶 CN2 GIA](https://bandwagonhost.com/aff.php?aff=85933)，2G 内存，1T 套餐缺货就选 2T；下单选不了系统就开通后在 KiwiVM 重装 Ubuntu 24.04）
 2. **跑加固**：部署完成后在服务器上执行本仓库的 `harden.sh`（补丁 + 面板回环 + 防火墙 + 自动安全更新）
 3. **照教程验收**：打开 [tutorial.md](tutorial.md) 按第六章验收清单逐项打勾（含 14 项审计、WebRTC 出口、IP 信任评分 ≥70）
 
@@ -30,7 +30,7 @@
 ## 致谢与上游
 
 - 部署基座来自 [@小小东](https://github.com/nevertoday/xiaoxiaodong-vps)（MIT），本仓库在其之上叠加安全加固与内容层方法论
-- 环境审计工具 [claude-switcher](https://github.com/YOURSJEYO/claude-switcher)（MIT）
+- 环境审计工具 [claude-switcher](https://github.com/YOURSJEYO/claude-switcher)（2026-11-02 后新版 AGPL-3.0，早期 MIT）
 - 检测工具：[ip.net.coffee/claude](https://ip.net.coffee/claude)、[fuck-claude.com](https://fuck-claude.com)
 
 ## 声明
